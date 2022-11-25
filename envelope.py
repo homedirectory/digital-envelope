@@ -16,6 +16,9 @@ SESS_KEY_LEN = SESS_KEY_BITLEN // 8
 RSA_KEY_BITLEN = 1024
 RSA_KEY_LEN = RSA_KEY_BITLEN // 8
 
+class VerificationException(Exception):
+    pass
+
 # generates one-time session key for symmetric encryption
 def gen_sesskey(bitlen: int) -> bytes:
     # make sure its big enough
@@ -130,7 +133,7 @@ def open_envelope(envlp: Envelope, pk: RSAKey, sk:RSAKey) -> bytes:
     # 4.
     h = hashlib.sha1(plaintext).digest()
     if h != signature:
-        raise Exception(f"""
+        raise VerificationException(f"""
         Could not verify signature. Digests differ.
         Signature      : {signature}
         Message hash   : {h}
@@ -148,11 +151,13 @@ if __name__ == "__main__":
 
     msg_bob = "Hello, Alice! It's Bob. Have you received this encrypted message? It might be padded with zeros at the beginning, though."
     envlp = Envelope.create(msg_bob.encode(), alice_pk, bob_sk)
+    #envlp.save("/tmp/envelope.test")
     print("Bob sent an envelope to Alice with message:")
     print(msg_bob)
 
     print("-" * 40)
     
+    #envlp = Envelope.from_file("/tmp/envelope.test")
     msg_alice = open_envelope(envlp, bob_pk, alice_sk)
     # remove padding
     msg_alice = msg_alice.lstrip(b'\x00').decode()

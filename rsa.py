@@ -40,7 +40,7 @@ class RSAKey:
     def from_file(filename):
         def saferead(f, n):
             b = f.read(n)
-            assert len(b) == n 
+            assert len(b) == n, f"{len(b)} != {n}"
             return b
 
         with open(filename, 'rb') as f:
@@ -83,7 +83,7 @@ class RSAKey:
             keytype = 1 if self.ispub else 0
             f.write(keytype.to_bytes(1, 'big'))
             # key size (4 bytes long)
-            f.write(self.keysize.to_bytes(4, 'big'))
+            f.write(self.size.to_bytes(4, 'big'))
 
             keysize_bytes = self.size // 8
             # modulus
