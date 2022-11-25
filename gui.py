@@ -67,9 +67,9 @@ class KeysTab(QWidget):
 
         if fileNames is not None:
             path = fileNames[0]
-            self.parent.pubKey, self.secKey = rsa_gen_keys(1024)
+            self.parent.pubKey, self.parent.secKey = rsa_gen_keys(1024)
             self.parent.pubKey.save(os.path.join(path, "pub.key"))
-            self.parent.pubKey.save(os.path.join(path, "sec.key"))
+            self.parent.secKey.save(os.path.join(path, "sec.key"))
             self.userKeyStatusLbl.setText("Your keys are ready to be used")
         else:
             showMsg("You must select a destination to save the generated keys")
@@ -87,7 +87,7 @@ class KeysTab(QWidget):
         if fileNames is not None:
             path = fileNames[0]
             self.parent.pubKey = RSAKey.from_file(path)
-            if self.secKey is not None:
+            if self.parent.secKey is not None:
                 self.userKeyStatusLbl.setText("Your keys are ready to be used")
 
     def on_selUserSecKeyBtn_clicked(self):
@@ -128,7 +128,6 @@ class EncryptTab(QWidget):
 
         # ---------- RIGHt ----------
         # button to choose a file for encryption
-        self.toEncryptFilepath = None
         choose_file_btn = QPushButton("Select input file")
         choose_file_btn.clicked.connect(self.on_choose_file_btn_clicked)
         rightBox.addWidget(choose_file_btn, alignment=Qt.AlignmentFlag.AlignCenter)
@@ -166,7 +165,7 @@ class EncryptTab(QWidget):
         if fileNames is not None:
             self.parent.toEncryptFilepath = fileNames[0]
             self.text_filepath.setText(fileNames[0])
-            print(self.toEncryptFilepath)
+            print(self.parent.toEncryptFilepath)
 
     def on_createEnvelopeBtn_clicked(self):
         if self.parent.otherPubKey is None:
